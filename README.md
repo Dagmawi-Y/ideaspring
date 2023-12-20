@@ -33,7 +33,7 @@ This project is licensed under the [License Type, e.g., MIT License]. See the [L
 
 ## Contact Us
 
-For any inquiries, suggestions, or support, feel free to contact us at [Contact Email or Link to Contact Page].
+For any inquiries, suggestions, or support, feel free to contact us [here](info@startgood.com).
 
 ---
 
