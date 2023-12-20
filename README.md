@@ -1,73 +1,40 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# StartGood - Connecting Startups & Investors
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+StartGood is an innovative online platform facilitating connections between startups and potential investors. This repository contains the codebase for the platform, empowering startups to showcase their potential and gain investment while providing investors curated insights and opportunities.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![StartGood Logo or Screenshot](link-to-image)
 
-## Description
+## Key Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Startup Connectivity:** Seamlessly connect startups with a global network of investors based on industry, location, and funding stage.
+- **Personalized Experience:** Advanced machine learning algorithms offer personalized recommendations and insights tailored to user preferences.
+- **Comprehensive Profiles:** Detailed startup profiles encompassing metrics, traction, founder information, and user engagement analytics.
+- **Engagement Forums:** Interactive discussion forums for engaging conversations and knowledge-sharing among users.
+- **Investor Tools:** Robust tools for portfolio management, industry trends, and investment performance analytics.
+- **Premium Subscription:** Exclusive access to enhanced features and insights through subscription services.
+- **Secure Messaging:** Direct communication channels for startups and investors within a secure environment.
 
-## Installation
+## Technologies Used
 
-```bash
-$ npm install
-```
+This project leverages the following technologies:
 
-## Running the app
+- **Frontend:** Next.js, React.js, HTML, CSS
+- **Backend:** NestJS, Node.js
+- **Database:** PostgreSQL, Prisma (ORM)
+- **Other Tools/Services:** TypeScript, RESTful APIs, JWT for authentication
 
-```bash
-# development
-$ npm run start
+## Contributing
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+We welcome contributions from the community! If you'd like to contribute to the project by improving existing features, fixing bugs, or suggesting new functionalities, please follow our [Contributing Guidelines](link-to-contributing-guidelines).
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is licensed under the [License Type, e.g., MIT License]. See the [LICENSE.md](link-to-license-file) file for details.
+
+## Contact Us
+
+For any inquiries, suggestions, or support, feel free to contact us at [Contact Email or Link to Contact Page].
+
+---
+
+Thank you for considering StartGood! We value your interest and look forward to collaborating with you.
