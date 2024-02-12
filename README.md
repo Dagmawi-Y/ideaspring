@@ -1,40 +1,50 @@
-# StartGood - Connecting Startups & Investors
+# NestJS Prisma Startup Platform
 
-StartGood is an innovative online platform facilitating connections between startups and potential investors. This repository contains the codebase for the platform, empowering startups to showcase their potential and gain investment while providing investors curated insights and opportunities.
+## Description
+This project is a web-based platform built with NestJS and Prisma that facilitates the interaction of startups and investors. It provides features for startup registration, authentication, and authorization, as well as protected routes for registered startups to access specific data.
 
-![StartGood Logo or Screenshot](link-to-image)
+## Installation
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/Dagmawi-Y/startgood.git
+    ```
 
-## Key Features
+2. **Install dependencies:**
+    ```bash
+    cd startgood
+    npm install
+    ```
 
-- **Startup Connectivity:** Seamlessly connect startups with a global network of investors based on industry, location, and funding stage.
-- **Personalized Experience:** Advanced machine learning algorithms offer personalized recommendations and insights tailored to user preferences.
-- **Comprehensive Profiles:** Detailed startup profiles encompassing metrics, traction, founder information, and user engagement analytics.
-- **Engagement Forums:** Interactive discussion forums for engaging conversations and knowledge-sharing among users.
-- **Investor Tools:** Robust tools for portfolio management, industry trends, and investment performance analytics.
-- **Premium Subscription:** Exclusive access to enhanced features and insights through subscription services.
-- **Secure Messaging:** Direct communication channels for startups and investors within a secure environment.
+3. **Set up the PostgreSQL database and configure the connection URL in the `.env` file.**
 
-## Technologies Used
+4. **Run database migrations:**
+    ```bash
+    npx prisma migrate save --name init
+    npx prisma migrate up --experimental
+    ```
 
-This project leverages the following technologies:
+5. **Start the server:**
+    ```bash
+    npm run start:dev
+    ```
 
-- **Frontend:** Next.js, React.js, HTML, CSS
-- **Backend:** NestJS, Node.js
-- **Database:** PostgreSQL, Prisma (ORM)
-- **Other Tools/Services:** TypeScript, RESTful APIs, JWT for authentication
+## Usage
+- Register startups using the provided registration endpoint.
+- Authenticate startups using JWT tokens.
+- Access protected routes for registered startups to retrieve specific data.
+
+## Endpoints
+<!-- - `POST /auth/register`: Register a new startup.
+- `POST /auth/login`: Log in and generate JWT token for authentication.
+- `GET /startups/protected-route`: Access protected route for registered startups. -->
 
 ## Contributing
-
-We welcome contributions from the community! If you'd like to contribute to the project by improving existing features, fixing bugs, or suggesting new functionalities, please follow our [Contributing Guidelines](link-to-contributing-guidelines).
+Contributions are welcome! Please follow these steps to contribute:
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature`).
+3. Commit your changes (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Create a new Pull Request.
 
 ## License
-
-This project is licensed under the [License Type, e.g., MIT License]. See the [LICENSE.md](link-to-license-file) file for details.
-
-## Contact Us
-
-For any inquiries, suggestions, or support, feel free to contact us [here](info@startgood.com).
-
----
-
-Thank you for considering StartGood! We value your interest and look forward to collaborating with you.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
