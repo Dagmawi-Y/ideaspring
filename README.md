@@ -1,4 +1,4 @@
-# NestJS Prisma Startup Platform
+# Startgood
 
 ## Description
 This project is a web-based platform built with NestJS and Prisma that facilitates the interaction of startups and investors. It provides features for startup registration, authentication, and authorization, as well as protected routes for registered startups to access specific data.
