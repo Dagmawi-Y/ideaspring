@@ -1,1 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model activity_logs {
+  log_id    Int       @id @default(autoincrement())
+  user_id   Int?
+  action    String    @db.VarChar(255)
+  timestamp DateTime? @default(now()) @db.Timestamp(6)
+  users     users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model categories {
+  category_id        Int                  @id @default(autoincrement())
+  name               String?              @unique @db.VarChar(100)
+  startup_categories startup_categories[]
+}
+
+model discussion_threads {
+  thread_id  Int       @id @default(autoincrement())
+  title      String    @db.VarChar(255)
+  content    String?
+  startup_id Int?
+  startups   startups? @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model faqs {
+  faq_id   Int     @id @default(autoincrement())
+  question String?
+  answer   String?
+}
+
+model features {
+  feature_id  Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  description String?
+  price       Decimal? @db.Decimal
+}
+
+model investments {
+  investment_id     Int        @id @default(autoincrement())
+  investor_id       Int?
+  startup_id        Int?
+  amount            Decimal?   @db.Decimal
+  equity_percentage Decimal?   @db.Decimal
+  timestamp         DateTime?  @default(now()) @db.Timestamp(6)
+  investors         investors? @relation(fields: [investor_id], references: [investor_id], onDelete: NoAction, onUpdate: NoAction)
+  startups          startups?  @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model investors {
+  investor_id           Int           @id @default(autoincrement())
+  name                  String        @db.VarChar(255)
+  portfolio_performance String?
+  diversification       String?
+  industry_preferences  String[]
+  user_id               Int?          @unique
+  investments           investments[]
+  users                 users?        @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model messages {
+  message_id                        Int       @id @default(autoincrement())
+  sender_id                         Int?
+  receiver_id                       Int?
+  content                           String
+  timestamp                         DateTime? @default(now()) @db.Timestamp(6)
+  users_messages_receiver_idTousers users?    @relation("messages_receiver_idTousers", fields: [receiver_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+  users_messages_sender_idTousers   users?    @relation("messages_sender_idTousers", fields: [sender_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model notifications {
+  notification_id Int       @id @default(autoincrement())
+  user_id         Int?
+  content         String
+  timestamp       DateTime? @default(now()) @db.Timestamp(6)
+  seen            Boolean?  @default(false)
+  users           users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model payments {
+  payment_id Int       @id @default(autoincrement())
+  user_id    Int?
+  amount     Decimal?  @db.Decimal
+  timestamp  DateTime? @default(now()) @db.Timestamp(6)
+  users      users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model platform_admins {
+  admin_id Int    @id @default(autoincrement())
+  name     String @db.VarChar(255)
+  user_id  Int?   @unique
+  users    users? @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model resources {
+  resource_id Int     @id @default(autoincrement())
+  title       String  @db.VarChar(255)
+  description String?
+  url         String? @db.VarChar(255)
+}
+
+model startup_categories {
+  startup_id  Int
+  category_id Int
+  categories  categories @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
+  startups    startups   @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([startup_id, category_id])
+}
+
+model startup_metrics {
+  metrics_id      Int       @id @default(autoincrement())
+  startup_id      Int?      @unique
+  views_count     Int?      @default(0)
+  upvotes_count   Int?      @default(0)
+  comments_count  Int?      @default(0)
+  followers_count Int?      @default(0)
+  weekly_rank     Int?      @default(0)
+  daily_rank      Int?      @default(0)
+  startups        startups? @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model startup_tags {
+  startup_id Int
+  tag_id     Int
+  startups   startups @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
+  tags       tags     @relation(fields: [tag_id], references: [tag_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([startup_id, tag_id])
+}
+
+model startups {
+  startup_id         Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(255)
+  description        String?
+  pitch_decks        String[]
+  founders           String[]
+  industry           String?              @db.VarChar(100)
+  location           String?              @db.VarChar(255)
+  owner_id           Int?
+  discussion_threads discussion_threads[]
+  investments        investments[]
+  startup_categories startup_categories[]
+  startup_metrics    startup_metrics?
+  startup_tags       startup_tags[]
+  users              users?               @relation(fields: [owner_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tags {
+  tag_id       Int            @id @default(autoincrement())
+  name         String?        @unique @db.VarChar(100)
+  startup_tags startup_tags[]
+}
+
+model users {
+  user_id                              Int              @id @default(autoincrement())
+  username                             String           @unique @db.VarChar(255)
+  email                                String           @unique @db.VarChar(255)
+  password                             String           @db.VarChar(255)
+  account_type                         String           @db.VarChar(50)
+  profile_info                         String?
+  activity_logs                        activity_logs[]
+  investors                            investors?
+  messages_messages_receiver_idTousers messages[]       @relation("messages_receiver_idTousers")
+  messages_messages_sender_idTousers   messages[]       @relation("messages_sender_idTousers")
+  notifications                        notifications[]
+  payments                             payments[]
+  platform_admins                      platform_admins?
+  startups                             startups[]
+}
