@@ -180,6 +180,8 @@ CREATE TABLE "users" (
     "password" VARCHAR(255) NOT NULL,
     "account_type" VARCHAR(50) NOT NULL,
     "profile_info" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("user_id")
 );

@@ -173,4 +173,6 @@ model users {
   payments                             payments[]
   platform_admins                      platform_admins?
   startups                             startups[]
+  createdAt                            DateTime         @default(now())
+  updatedAt                            DateTime         @updatedAt
 }
