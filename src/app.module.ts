@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { InvestorModule } from './investor/investor.module';
@@ -15,6 +17,7 @@ import { LoggingModule } from './logging/logging.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { CacheModule } from './cache/cache.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { PitchModule } from './pitch/pitch.module';
 
 @Module({
   imports: [
@@ -34,6 +37,10 @@ import { PrismaModule } from './prisma/prisma.module';
     LoggingModule,
     FileUploadModule,
     CacheModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    PitchModule,
   ],
   controllers: [],
   providers: [],

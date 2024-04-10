@@ -7,172 +7,400 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model activity_logs {
-  log_id    Int       @id @default(autoincrement())
-  user_id   Int?
-  action    String    @db.VarChar(255)
-  timestamp DateTime? @default(now()) @db.Timestamp(6)
-  users     users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  permissions RolePermission[]
+  userRoles   UserRole[]
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
 }
 
-model categories {
-  category_id        Int                  @id @default(autoincrement())
-  name               String?              @unique @db.VarChar(100)
-  startup_categories startup_categories[]
+model Permission {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  rolePermissions RolePermission[]
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
 }
 
-model discussion_threads {
-  thread_id  Int       @id @default(autoincrement())
-  title      String    @db.VarChar(255)
-  content    String?
-  startup_id Int?
-  startups   startups? @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  role         Role       @relation(fields: [roleId], references: [id])
+  roleId       Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId Int
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @updatedAt
+
+  @@unique([roleId, permissionId])
 }
 
-model faqs {
-  faq_id   Int     @id @default(autoincrement())
-  question String?
-  answer   String?
+model UserRole {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  role       Role     @relation(fields: [roleId], references: [id])
+  roleId     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([userId, roleId])
 }
 
-model features {
-  feature_id  Int      @id @default(autoincrement())
-  name        String   @db.VarChar(255)
-  description String?
-  price       Decimal? @db.Decimal
+model User {
+  id            Int        @id @default(autoincrement())
+  first_name    String?
+  last_name     String?
+  email         String     @unique
+  password      String
+  profile_image String?
+  banner_image  String?
+  town          String?
+  city          City?      @relation(fields: [city_id], references: [id])
+  city_id       Int?
+  country       Country?   @relation(fields: [country_id], references: [id])
+  country_id    Int?
+  phone_number  String?
+  mobile_number String?
+  bio           String?
+  role          String     @default("user")
+  created_at    DateTime   @default(now())
+  alerts        Alert[]
+  startups      Startup[]  @relation("UserStartups")
+  investor      Investor?
+  comments      Comment[]
+  upvotes       Upvote[]
+  investor_id   Int?       @unique
+  UserRole      UserRole[]
+
+  conversations Conversation[] @relation("ConversationParticipants")
+  Message       Message[]
+  ReadStatus    ReadStatus[]
 }
 
-model investments {
-  investment_id     Int        @id @default(autoincrement())
-  investor_id       Int?
-  startup_id        Int?
-  amount            Decimal?   @db.Decimal
-  equity_percentage Decimal?   @db.Decimal
-  timestamp         DateTime?  @default(now()) @db.Timestamp(6)
-  investors         investors? @relation(fields: [investor_id], references: [investor_id], onDelete: NoAction, onUpdate: NoAction)
-  startups          startups?  @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
+model City {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  users      User[]
+  created_at DateTime @default(now())
 }
 
-model investors {
-  investor_id           Int           @id @default(autoincrement())
-  name                  String        @db.VarChar(255)
-  portfolio_performance String?
-  diversification       String?
-  industry_preferences  String[]
-  user_id               Int?          @unique
-  investments           investments[]
-  users                 users?        @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+model Country {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  users      User[]
+  created_at DateTime @default(now())
 }
 
-model messages {
-  message_id                        Int       @id @default(autoincrement())
-  sender_id                         Int?
-  receiver_id                       Int?
-  content                           String
-  timestamp                         DateTime? @default(now()) @db.Timestamp(6)
-  users_messages_receiver_idTousers users?    @relation("messages_receiver_idTousers", fields: [receiver_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
-  users_messages_sender_idTousers   users?    @relation("messages_sender_idTousers", fields: [sender_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+model Startup {
+  id                     Int                @id @default(autoincrement())
+  user                   User               @relation("UserStartups", fields: [user_id], references: [id])
+  user_id                Int
+  pitch_title            String
+  website                String?
+  location               String?
+  mobile_number          String?
+  industry_1_id          Int?
+  industry_1             Industry?          @relation("Industry1", fields: [industry_1_id], references: [id])
+  industry_2_id          Int?
+  industry_2             Industry?          @relation("Industry2", fields: [industry_2_id], references: [id])
+  stage_id               Int?
+  stage                  Stage?             @relation(fields: [stage_id], references: [id])
+  ideal_investor_role_id Int?
+  ideal_investor_role    InvestorRole?      @relation(fields: [ideal_investor_role_id], references: [id])
+  previous_round_amount  Float?
+  total_raising_amount   Float?
+  raised_amount          Float?
+  minimum_investment     Float?
+  tax_relief_id          Int?
+  tax_relief             TaxRelief?         @relation(fields: [tax_relief_id], references: [id])
+  impression_count       Int                @default(0)
+  created_at             DateTime           @default(now())
+  pitch_deal             PitchDeal?
+  deal_details           DealDetails?
+  team_members           Team[]
+  images_videos          ImagesVideos[]
+  documents              Document[]
+  comments               Comment[]
+  upvotes                Upvote[]
+  mlRecommendations      MLRecommendation[]
 }
 
-model notifications {
-  notification_id Int       @id @default(autoincrement())
-  user_id         Int?
-  content         String
-  timestamp       DateTime? @default(now()) @db.Timestamp(6)
-  seen            Boolean?  @default(false)
-  users           users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+model PitchDeal {
+  startup_id           Int      @id
+  short_summary        String?
+  business_description String?
+  market_description   String?
+  progress_proof       String?
+  objectives_future    String?
+  highlights           String?
+  created_at           DateTime @default(now())
+  startup              Startup  @relation(fields: [startup_id], references: [id])
 }
 
-model payments {
-  payment_id Int       @id @default(autoincrement())
-  user_id    Int?
-  amount     Decimal?  @db.Decimal
-  timestamp  DateTime? @default(now()) @db.Timestamp(6)
-  users      users?    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+model DealDetails {
+  startup_id       Int      @id
+  deal_type        String?
+  deal_description String?
+  created_at       DateTime @default(now())
+  startup          Startup  @relation(fields: [startup_id], references: [id])
 }
 
-model platform_admins {
-  admin_id Int    @id @default(autoincrement())
-  name     String @db.VarChar(255)
-  user_id  Int?   @unique
-  users    users? @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+model Team {
+  id               Int      @id @default(autoincrement())
+  startup_id       Int
+  team_member_name String?
+  linkedin_profile String?
+  position         String?
+  bio              String?
+  created_at       DateTime @default(now())
+  startup          Startup  @relation(fields: [startup_id], references: [id])
 }
 
-model resources {
-  resource_id Int     @id @default(autoincrement())
-  title       String  @db.VarChar(255)
-  description String?
-  url         String? @db.VarChar(255)
-}
-
-model startup_categories {
-  startup_id  Int
-  category_id Int
-  categories  categories @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
-  startups    startups   @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@id([startup_id, category_id])
-}
-
-model startup_metrics {
-  metrics_id      Int       @id @default(autoincrement())
-  startup_id      Int?      @unique
-  views_count     Int?      @default(0)
-  upvotes_count   Int?      @default(0)
-  comments_count  Int?      @default(0)
-  followers_count Int?      @default(0)
-  weekly_rank     Int?      @default(0)
-  daily_rank      Int?      @default(0)
-  startups        startups? @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model startup_tags {
+model ImagesVideos {
+  id         Int      @id @default(autoincrement())
   startup_id Int
-  tag_id     Int
-  startups   startups @relation(fields: [startup_id], references: [startup_id], onDelete: NoAction, onUpdate: NoAction)
-  tags       tags     @relation(fields: [tag_id], references: [tag_id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@id([startup_id, tag_id])
+  image_path String?
+  video_url  String?
+  created_at DateTime @default(now())
+  startup    Startup  @relation(fields: [startup_id], references: [id])
 }
 
-model startups {
-  startup_id         Int                  @id @default(autoincrement())
-  name               String               @db.VarChar(255)
-  description        String?
-  pitch_decks        String[]
-  founders           String[]
-  industry           String?              @db.VarChar(100)
-  location           String?              @db.VarChar(255)
-  owner_id           Int?
-  discussion_threads discussion_threads[]
-  investments        investments[]
-  startup_categories startup_categories[]
-  startup_metrics    startup_metrics?
-  startup_tags       startup_tags[]
-  users              users?               @relation(fields: [owner_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+model Document {
+  id            Int      @id @default(autoincrement())
+  startup_id    Int
+  document_type String?
+  document_path String?
+  created_at    DateTime @default(now())
+  startup       Startup  @relation(fields: [startup_id], references: [id])
 }
 
-model tags {
-  tag_id       Int            @id @default(autoincrement())
-  name         String?        @unique @db.VarChar(100)
-  startup_tags startup_tags[]
+model Industry {
+  id              Int               @id @default(autoincrement())
+  industry_name   String
+  created_at      DateTime          @default(now())
+  startups1       Startup[]         @relation("Industry1")
+  startups2       Startup[]         @relation("Industry2")
+  InvestorCompany InvestorCompany[]
 }
 
-model users {
-  user_id                              Int              @id @default(autoincrement())
-  username                             String           @unique @db.VarChar(255)
-  email                                String           @unique @db.VarChar(255)
-  password                             String           @db.VarChar(255)
-  account_type                         String           @db.VarChar(50)
-  profile_info                         String?
-  activity_logs                        activity_logs[]
-  investors                            investors?
-  messages_messages_receiver_idTousers messages[]       @relation("messages_receiver_idTousers")
-  messages_messages_sender_idTousers   messages[]       @relation("messages_sender_idTousers")
-  notifications                        notifications[]
-  payments                             payments[]
-  platform_admins                      platform_admins?
-  startups                             startups[]
-  createdAt                            DateTime         @default(now())
-  updatedAt                            DateTime         @updatedAt
+model Stage {
+  id              Int               @id @default(autoincrement())
+  stage_name      String
+  created_at      DateTime          @default(now())
+  startups        Startup[]
+  InvestorCompany InvestorCompany[]
+}
+
+model InvestorRole {
+  id         Int       @id @default(autoincrement())
+  role_name  String
+  created_at DateTime  @default(now())
+  startups   Startup[]
+}
+
+model TaxRelief {
+  id          Int       @id @default(autoincrement())
+  relief_name String
+  created_at  DateTime  @default(now())
+  startups    Startup[]
+}
+
+model Alert {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  source     String
+  message    String
+  timestamp  DateTime
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+}
+
+model InvestorProfile {
+  id               Int      @id @default(autoincrement())
+  first_name       String
+  last_name        String
+  email            String   @unique
+  profile_image    String?
+  banner_image     String?
+  town_city        String?
+  country          String?
+  phone_number     String?
+  mobile_number    String?
+  linkedin_profile String?
+  twitter_profile  String?
+  facebook_profile String?
+  website          String?
+  skype            String?
+  about_me         String?
+  created_at       DateTime @default(now())
+  investor         Investor @relation(fields: [investor_id], references: [id])
+  investor_id      Int      @unique
+}
+
+model InvestorCompanyProfile {
+  id                  Int      @id @default(autoincrement())
+  company             String?
+  position            String?
+  company_description String?
+  company_website     String?
+  created_at          DateTime @default(now())
+  investor            Investor @relation(fields: [investor_id], references: [id])
+  investor_id         Int      @unique
+}
+
+model InvestorInterests {
+  id                    Int      @id @default(autoincrement())
+  investment_criteria   String?
+  areas_of_expertise    String?
+  value_addition        String?
+  number_of_investments Int?     @default(0)
+  created_at            DateTime @default(now())
+  investor              Investor @relation(fields: [investor_id], references: [id])
+  investor_id           Int      @unique
+}
+
+model Investor {
+  id                     Int                     @id @default(autoincrement())
+  investor_type          String?
+  keywords               Keyword[]
+  invested_companies     InvestorCompany[]
+  created_at             DateTime                @default(now())
+  user                   User?                   @relation(fields: [user_id], references: [id])
+  user_id                Int?                    @unique
+  mlRecommendations      MLRecommendation[]
+  investorProfile        InvestorProfile?
+  investorCompanyProfile InvestorCompanyProfile?
+  investorInterests      InvestorInterests?
+  interested_locations   InvestedLocation[]
+  interested_stages      InvestedStage[]
+  interested_industries  InvestedIndustry[]
+  interested_countries   InvestedCountry[]
+  spoken_languages       Language[]
+}
+
+model InvestedLocation {
+  id            Int       @id @default(autoincrement())
+  location_name String
+  created_at    DateTime  @default(now())
+  investors     Investor? @relation(fields: [investor_id], references: [id])
+  investor_id   Int
+}
+
+model InvestedStage {
+  id          Int       @id @default(autoincrement())
+  stage_name  String
+  created_at  DateTime  @default(now())
+  investors   Investor? @relation(fields: [investor_id], references: [id])
+  investor_id Int
+}
+
+model InvestedIndustry {
+  id            Int       @id @default(autoincrement())
+  industry_name String
+  created_at    DateTime  @default(now())
+  investors     Investor? @relation(fields: [investor_id], references: [id])
+  investor_id   Int
+}
+
+model InvestedCountry {
+  id           Int       @id @default(autoincrement())
+  country_name String
+  created_at   DateTime  @default(now())
+  investors    Investor? @relation(fields: [investor_id], references: [id])
+  investor_id  Int
+}
+
+model Language {
+  id            Int       @id @default(autoincrement())
+  language_name String
+  created_at    DateTime  @default(now())
+  investors     Investor? @relation(fields: [investor_id], references: [id])
+  investor_id   Int
+}
+
+model Keyword {
+  id           Int       @id @default(autoincrement())
+  keyword_name String
+  created_at   DateTime  @default(now())
+  investors    Investor? @relation(fields: [investor_id], references: [id])
+  investor_id  Int
+}
+
+model InvestorCompany {
+  id              Int       @id @default(autoincrement())
+  company_name    String
+  invested_amount Float?
+  created_at      DateTime  @default(now())
+  investor        Investor? @relation(fields: [investor_id], references: [id])
+  investor_id     Int
+  industry        Industry? @relation(fields: [industry_id], references: [id])
+  industry_id     Int?
+  stage           Stage?    @relation(fields: [stage_id], references: [id])
+  stage_id        Int?
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  startup_id Int
+  comment    String
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+  startup    Startup  @relation(fields: [startup_id], references: [id])
+}
+
+model Upvote {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  startup_id Int
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+  startup    Startup  @relation(fields: [startup_id], references: [id])
+}
+
+model MLRecommendation {
+  id          Int       @id @default(autoincrement())
+  startup_id  Int?
+  investor_id Int?
+  score       Float
+  created_at  DateTime  @default(now())
+  startup     Startup?  @relation(fields: [startup_id], references: [id])
+  investor    Investor? @relation(fields: [investor_id], references: [id])
+}
+
+model Conversation {
+  id           Int          @id @default(autoincrement())
+  participants User[]       @relation("ConversationParticipants")
+  messages     Message[]
+  readStatuses ReadStatus[]
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+}
+
+model Message {
+  id              Int          @id @default(autoincrement())
+  conversation_id Int
+  sender_id       Int
+  sender          User         @relation(fields: [sender_id], references: [id])
+  content         String
+  edited          Boolean      @default(false)
+  edited_at       DateTime?    @updatedAt
+  delivered_at    DateTime?
+  created_at      DateTime     @default(now())
+  conversation    Conversation @relation(fields: [conversation_id], references: [id])
+}
+
+model ReadStatus {
+  id              Int          @id @default(autoincrement())
+  conversation_id Int
+  user_id         Int
+  last_read_at    DateTime?
+  conversation    Conversation @relation(fields: [conversation_id], references: [id])
+  user            User         @relation(fields: [user_id], references: [id])
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@unique([conversation_id, user_id])
 }
