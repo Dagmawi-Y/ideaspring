@@ -64,7 +64,6 @@ model User {
   phone_number  String?
   mobile_number String?
   bio           String?
-  role          String     @default("user")
   created_at    DateTime   @default(now())
   alerts        Alert[]
   startups      Startup[]  @relation("UserStartups")

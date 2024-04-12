@@ -7,15 +7,6 @@ import { InvestorModule } from './investor/investor.module';
 import { StartupModule } from './startup/startup.module';
 import { MessageModule } from './message/message.module';
 import { NotificationModule } from './notification/notification.module';
-import { RecommendationModule } from './recommendation/recommendation.module';
-import { AnalyticsModule } from './analytics/analytics.module';
-import { SharedModule } from './shared/shared.module';
-import { ExternalModule } from './external/external.module';
-import { LocalizationModule } from './localization/localization.module';
-import { SecurityModule } from './security/security.module';
-import { LoggingModule } from './logging/logging.module';
-import { FileUploadModule } from './file-upload/file-upload.module';
-import { CacheModule } from './cache/cache.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PitchModule } from './pitch/pitch.module';
 
@@ -27,16 +18,7 @@ import { PitchModule } from './pitch/pitch.module';
     StartupModule,
     MessageModule,
     NotificationModule,
-    RecommendationModule,
-    AnalyticsModule,
-    SharedModule,
     PrismaModule,
-    ExternalModule,
-    LocalizationModule,
-    SecurityModule,
-    LoggingModule,
-    FileUploadModule,
-    CacheModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
