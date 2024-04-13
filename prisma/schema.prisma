@@ -36,46 +36,45 @@ model RolePermission {
   @@unique([roleId, permissionId])
 }
 
+model User {
+  id            Int            @id @default(autoincrement())
+  first_name    String?
+  last_name     String?
+  email         String         @unique
+  password      String
+  profile_image String?
+  banner_image  String?
+  town          String?
+  city          City?          @relation(fields: [city_id], references: [id])
+  city_id       Int?
+  country       Country?       @relation(fields: [country_id], references: [id])
+  country_id    Int?
+  phone_number  String?
+  mobile_number String?
+  bio           String?
+  created_at    DateTime       @default(now())
+  alerts        Alert[]
+  startups      Startup[]      @relation("UserStartups")
+  investor      Investor?
+  comments      Comment[]
+  upvotes       Upvote[]
+  investor_id   Int?           @unique
+  userRole      UserRole?      @relation("UserToRole")
+  conversations Conversation[] @relation("ConversationParticipants")
+  Message       Message[]
+  ReadStatus    ReadStatus[]
+}
+
 model UserRole {
   id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     Int
+  user       User     @relation("UserToRole", fields: [userId], references: [id])
+  userId     Int      @unique
   role       Role     @relation(fields: [roleId], references: [id])
   roleId     Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   @@unique([userId, roleId])
-}
-
-model User {
-  id            Int        @id @default(autoincrement())
-  first_name    String?
-  last_name     String?
-  email         String     @unique
-  password      String
-  profile_image String?
-  banner_image  String?
-  town          String?
-  city          City?      @relation(fields: [city_id], references: [id])
-  city_id       Int?
-  country       Country?   @relation(fields: [country_id], references: [id])
-  country_id    Int?
-  phone_number  String?
-  mobile_number String?
-  bio           String?
-  created_at    DateTime   @default(now())
-  alerts        Alert[]
-  startups      Startup[]  @relation("UserStartups")
-  investor      Investor?
-  comments      Comment[]
-  upvotes       Upvote[]
-  investor_id   Int?       @unique
-  UserRole      UserRole[]
-
-  conversations Conversation[] @relation("ConversationParticipants")
-  Message       Message[]
-  ReadStatus    ReadStatus[]
 }
 
 model City {

@@ -6,7 +6,7 @@ enum UserRole {
   Investor = 'investor',
   Admin = 'admin',
 }
-export class AuthDto {
+export class SignupDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;

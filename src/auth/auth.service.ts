@@ -3,13 +3,14 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { User, Startup } from '@prisma/client';
+
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDto } from './dto';
+import { SignupDto } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { SignInDto } from './dto/signIn.dto';
 
 @Injectable({})
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signup(dto: AuthDto) {
+  async signup(dto: SignupDto) {
     // Generate the password hash
     const hash = await argon.hash(dto.password);
 
@@ -65,18 +66,12 @@ export class AuthService {
     }
   }
 
-  async signin(dto: AuthDto) {
+  async signin(dto: SignInDto) {
     try {
       // Find the user by email
       const user = await this.prisma.user.findUnique({
-        where: {
-          email: dto.email,
-        },
-      });
-      const role = await this.prisma.role.findUnique({
-        where: {
-          name: dto.role,
-        },
+        where: { email: dto.email },
+        include: { userRole: { include: { role: true } } },
       });
 
       // If the user is not found, throw an error
@@ -92,8 +87,11 @@ export class AuthService {
         throw new ForbiddenException('Invalid credentials');
       }
 
+      // Get the user's role
+      const role = user.userRole?.role;
+
       // Return the user
-      return this.signToken(user.id, user.email, role.name);
+      return this.signToken(user.id, user.email, role?.name ?? '');
     } catch (error) {
       throw error;
     }

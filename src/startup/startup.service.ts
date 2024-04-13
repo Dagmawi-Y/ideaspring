@@ -48,6 +48,27 @@ export class StartupService {
       },
     });
 
-    return startup;
+    return {
+      msg: 'Startup created successfully',
+      startup_id: startup.id,
+      startup_name: startup.pitch_title,
+    };
+  }
+
+  async myStartups(userId: number) {
+    if (!userId) {
+      throw new Error('userId is undefined');
+    }
+    const startups = await this.prisma.startup.findMany({
+      where: {
+        user: { id: userId },
+      },
+    });
+    return startups;
+  }
+
+  async startups() {
+    const startups = await this.prisma.startup.findMany();
+    return startups;
   }
 }

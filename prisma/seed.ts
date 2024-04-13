@@ -10,6 +10,74 @@ enum Role {
 }
 
 async function main() {
+  // InvestorRole
+  await prisma.investorRole.createMany({
+    data: [
+      { role_name: 'Silent' },
+      { role_name: 'Daily Involvement' },
+      { role_name: 'Weekly Involvement' },
+      { role_name: 'Monthly Involvement' },
+      { role_name: 'Any' },
+    ],
+  });
+
+  // TaxRelief
+  await prisma.taxRelief.createMany({
+    data: [{ relief_name: 'SEIS' }, { relief_name: 'EIS' }],
+  });
+
+  // Stage
+  await prisma.stage.createMany({
+    data: [
+      { stage_name: 'Achieving Sales' },
+      { stage_name: 'Breaking Even' },
+      { stage_name: 'MVP/Finished Product' },
+      { stage_name: 'Other' },
+      { stage_name: 'Pre-Startup/R&D' },
+      { stage_name: 'Profitable' },
+    ],
+  });
+
+  // Industry
+  await prisma.industry.createMany({
+    data: [
+      { industry_name: 'Agriculture' },
+      { industry_name: 'Business Services' },
+      { industry_name: 'Education & Training' },
+      { industry_name: 'Energy & Natural Resources' },
+      { industry_name: 'Entertainment & Leisure' },
+      { industry_name: 'Fashion & Beauty' },
+      { industry_name: 'Finance' },
+      { industry_name: 'Food & Beverage' },
+      { industry_name: 'Hospitality, Restaurants & Bars' },
+      { industry_name: 'Manufacturing & Engineering' },
+      { industry_name: 'Media' },
+      { industry_name: 'Medical & Sciences' },
+      { industry_name: 'Personal Services' },
+      { industry_name: 'Products & Inventions' },
+      { industry_name: 'Property' },
+      { industry_name: 'Retail' },
+      { industry_name: 'Sales & Marketing' },
+      { industry_name: 'Software' },
+      { industry_name: 'Technology' },
+      { industry_name: 'Transportation' },
+    ],
+  });
+
+  // Country
+  await prisma.country.create({
+    data: {
+      name: 'Ethiopia',
+    },
+  });
+
+  // City
+  await prisma.city.create({
+    data: {
+      name: 'Addis Ababa',
+    },
+  });
+
   const roles = [Role.Engager, Role.Entrepreneur, Role.Investor, Role.Admin];
 
   for (const role of roles) {

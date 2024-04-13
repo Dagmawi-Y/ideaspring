@@ -7,7 +7,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto';
+import { SignupDto } from './dto';
+import { SignInDto } from './dto/signIn.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('auth')
@@ -18,16 +19,21 @@ export class AuthController {
   @Post('signup')
   @ApiResponse({
     status: 200,
-    description: 'Returns a user objects who signed up',
-    type: [AuthDto],
+    description: 'Returns a user objects who signed up.',
+    type: [SignupDto],
   })
-  signup(@Body() dto: AuthDto) {
+  signup(@Body() dto: SignupDto) {
     return this.authService.signup(dto);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a user who signed in.',
+    type: [SignInDto],
+  })
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  signin(@Body() dto: AuthDto) {
+  signin(@Body() dto: SignInDto) {
     return this.authService.signin(dto);
   }
 }

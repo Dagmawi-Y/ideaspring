@@ -9,6 +9,7 @@ import { MessageModule } from './message/message.module';
 import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PitchModule } from './pitch/pitch.module';
+import { EngagerModule } from './engager/engager.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PitchModule } from './pitch/pitch.module';
       isGlobal: true,
     }),
     PitchModule,
+    EngagerModule,
   ],
   controllers: [],
   providers: [],
