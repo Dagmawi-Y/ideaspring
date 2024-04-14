@@ -1,9 +1,4 @@
-import {
-  IsOptional,
-  IsString,
-  IsNumber,
-  IsNumberString,
-} from 'class-validator';
+import { IsOptional, IsString, IsNumber } from 'class-validator';
 
 export class CreateStartupDto {
   @IsString()

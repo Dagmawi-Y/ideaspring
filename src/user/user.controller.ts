@@ -9,9 +9,10 @@ import { RolesGuard } from 'src/auth/guard/roles.guard';
 @Controller('users')
 export class UserController {
   @Get('me')
-  @Roles('engager')
+  @Roles('entrepreneur')
   @UseGuards(RolesGuard)
   getMe(@GetUser() user: User, @Req() req: any) {
+    console.log(req.user);
     // const role = req.user.role;
     return {
       user: user,
