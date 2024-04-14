@@ -16,14 +16,14 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('signup')
+  @Post('register')
   @ApiResponse({
     status: 200,
     description: 'Returns a user objects who signed up.',
     type: [SignupDto],
   })
   signup(@Body() dto: SignupDto) {
-    return this.authService.signup(dto);
+    return this.authService.register(dto);
   }
 
   @ApiResponse({
@@ -32,8 +32,8 @@ export class AuthController {
     type: [SignInDto],
   })
   @HttpCode(HttpStatus.OK)
-  @Post('signin')
+  @Post('login')
   signin(@Body() dto: SignInDto) {
-    return this.authService.signin(dto);
+    return this.authService.login(dto);
   }
 }

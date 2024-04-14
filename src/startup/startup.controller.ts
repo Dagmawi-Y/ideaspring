@@ -31,14 +31,5 @@ export class StartupController {
     return this.startupService.createStartup(createStartupDto, userId);
   }
 
-  @Get('my-startups')
-  async getStartups(@Req() req) {
-    const userId = req.user.id;
-    return this.startupService.myStartups(userId);
-  }
 
-  @Get('/')
-  async startups() {
-    return this.startupService.startups();
-  }
 }

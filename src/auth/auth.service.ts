@@ -20,7 +20,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signup(dto: SignupDto) {
+  async register(dto: SignupDto) {
     // Generate the password hash
     const hash = await argon.hash(dto.password);
 
@@ -66,7 +66,7 @@ export class AuthService {
     }
   }
 
-  async signin(dto: SignInDto) {
+  async login(dto: SignInDto) {
     try {
       // Find the user by email
       const user = await this.prisma.user.findUnique({

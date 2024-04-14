@@ -67,7 +67,7 @@ model User {
 
 model UserRole {
   id         Int      @id @default(autoincrement())
-  user       User     @relation("UserToRole", fields: [userId], references: [id])
+  user       User     @relation("UserToRole", fields: [userId], references: [id], onDelete: Cascade)
   userId     Int      @unique
   role       Role     @relation(fields: [roleId], references: [id])
   roleId     Int
@@ -212,7 +212,7 @@ model Alert {
   message    String
   timestamp  DateTime
   created_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model InvestorProfile {
@@ -345,7 +345,7 @@ model Comment {
   startup_id Int
   comment    String
   created_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   startup    Startup  @relation(fields: [startup_id], references: [id])
 }
 
@@ -354,7 +354,7 @@ model Upvote {
   user_id    Int
   startup_id Int
   created_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   startup    Startup  @relation(fields: [startup_id], references: [id])
 }
 
@@ -381,7 +381,7 @@ model Message {
   id              Int          @id @default(autoincrement())
   conversation_id Int
   sender_id       Int
-  sender          User         @relation(fields: [sender_id], references: [id])
+  sender          User         @relation(fields: [sender_id], references: [id], onDelete: Cascade)
   content         String
   edited          Boolean      @default(false)
   edited_at       DateTime?    @updatedAt
@@ -396,7 +396,7 @@ model ReadStatus {
   user_id         Int
   last_read_at    DateTime?
   conversation    Conversation @relation(fields: [conversation_id], references: [id])
-  user            User         @relation(fields: [user_id], references: [id])
+  user            User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
   created_at      DateTime     @default(now())
   updated_at      DateTime     @updatedAt
 
