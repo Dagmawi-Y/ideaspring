@@ -63,6 +63,7 @@ model User {
   conversations Conversation[] @relation("ConversationParticipants")
   Message       Message[]
   ReadStatus    ReadStatus[]
+  RevokedToken  RevokedToken[]
 }
 
 model UserRole {
@@ -75,6 +76,14 @@ model UserRole {
   updated_at DateTime @updatedAt
 
   @@unique([userId, roleId])
+}
+
+model RevokedToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  revokedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
 }
 
 model City {
@@ -93,7 +102,7 @@ model Country {
 
 model Startup {
   id                     Int                @id @default(autoincrement())
-  user                   User               @relation("UserStartups", fields: [user_id], references: [id])
+  user                   User               @relation("UserStartups", fields: [user_id], references: [id], onDelete: Cascade)
   user_id                Int
   pitch_title            String
   website                String?

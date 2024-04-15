@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient();
 
@@ -9,8 +10,13 @@ enum Role {
   Admin = 'admin',
 }
 
+async function hashPassword(password) {
+  const hash = await argon2.hash(password);
+  return hash;
+}
+
 async function main() {
-  // InvestorRole
+  // Investor Roles
   await prisma.investorRole.createMany({
     data: [
       { role_name: 'Silent' },
@@ -20,13 +26,15 @@ async function main() {
       { role_name: 'Any' },
     ],
   });
+  console.log('Investor roles created successfully.'); // Added console log
 
-  // TaxRelief
+  // Tax Relief Options
   await prisma.taxRelief.createMany({
     data: [{ relief_name: 'SEIS' }, { relief_name: 'EIS' }],
   });
+  console.log('Tax relief options created successfully.'); // Added console log
 
-  // Stage
+  // Startup Stages
   await prisma.stage.createMany({
     data: [
       { stage_name: 'Achieving Sales' },
@@ -37,8 +45,9 @@ async function main() {
       { stage_name: 'Profitable' },
     ],
   });
+  console.log('Startup stages created successfully.'); // Added console log
 
-  // Industry
+  // Industries
   await prisma.industry.createMany({
     data: [
       { industry_name: 'Agriculture' },
@@ -63,43 +72,26 @@ async function main() {
       { industry_name: 'Transportation' },
     ],
   });
+  console.log('Industries created successfully.');
 
-  // Country
-  await prisma.country.create({
-    data: {
-      name: 'Ethiopia',
-    },
-  });
+  // Countries and Cities (Example)
+  await prisma.country.create({ data: { name: 'Ethiopia' } });
+  await prisma.city.create({ data: { name: 'Addis Ababa' } });
 
-  // City
-  await prisma.city.create({
-    data: {
-      name: 'Addis Ababa',
-    },
-  });
-
+  // Roles
   const roles = [Role.Engager, Role.Entrepreneur, Role.Investor, Role.Admin];
 
   for (const role of roles) {
     const existingRole = await prisma.role.findUnique({
       where: { name: role },
     });
-
-    if (existingRole) {
-      console.log(`Role ${role} already exists.`);
-      continue;
+    if (!existingRole) {
+      await prisma.role.create({ data: { name: role } });
+      console.log(`Role ${role} created.`);
     }
-
-    await prisma.role.create({
-      data: {
-        name: role,
-      },
-    });
-
-    console.log(`Role ${role} created.`);
   }
 
-  // Create permissions first
+  // Permissions
   const permissionNames = [
     'CREATE_PITCH',
     'READ_PITCH',
@@ -139,10 +131,10 @@ async function main() {
     ),
   );
 
-  // Create RolePermission records
+  // Role-Permission Associations
   const rolePermissionData: Prisma.RolePermissionCreateManyInput[] = [];
 
-  // Entrepreneur Role
+  // Entrepreneur Permissions
   const entrepreneurPermissions = createdPermissions.filter((permission) =>
     [
       'CREATE_PITCH',
@@ -163,7 +155,6 @@ async function main() {
       'RECEIVE_ALERTS',
     ].includes(permission.name),
   );
-
   const entrepreneurRoleId = (
     await prisma.role.findUnique({ where: { name: Role.Entrepreneur } })
   ).id;
@@ -174,7 +165,7 @@ async function main() {
     })),
   );
 
-  // Investor Role
+  // Investor Permissions
   const investorPermissions = createdPermissions.filter((permission) =>
     [
       'VIEW_MATCHED_PITCHES',
@@ -193,7 +184,6 @@ async function main() {
       'DELETE_ACCOUNT',
     ].includes(permission.name),
   );
-
   const investorRoleId = (
     await prisma.role.findUnique({ where: { name: Role.Investor } })
   ).id;
@@ -204,7 +194,7 @@ async function main() {
     })),
   );
 
-  // Engager Role
+  // Engager Permissions
   const engagerPermissions = createdPermissions.filter((permission) =>
     [
       'UPVOTE_PITCH',
@@ -214,7 +204,6 @@ async function main() {
       'DELETE_ACCOUNT',
     ].includes(permission.name),
   );
-
   const engagerRoleId = (
     await prisma.role.findUnique({ where: { name: Role.Engager } })
   ).id;
@@ -225,7 +214,7 @@ async function main() {
     })),
   );
 
-  // Admin Role
+  // Admin Permissions (All permissions)
   const adminRoleId = (
     await prisma.role.findUnique({ where: { name: Role.Admin } })
   ).id;
@@ -236,12 +225,109 @@ async function main() {
     })),
   );
 
-  await prisma.rolePermission.createMany({
-    data: rolePermissionData,
-  });
+  await prisma.rolePermission.createMany({ data: rolePermissionData });
+  console.log('Role-permission associations created.');
 
-  console.log('Roles and permissions seeding completed.');
+  // **--- User Creation with Argon2 Hashed Passwords ---**
+
+  const defaultUsers = [
+    {
+      firstName: 'Admin',
+      lastName: 'Test',
+      email: 'admin@example.com',
+      password: 'adminpassword', // Replace with a secure password
+      role: Role.Admin,
+      profileImage: 'https://example.com/admin_profile.jpg',
+      bannerImage: 'https://example.com/admin_banner.jpg',
+      town: 'Admintown',
+      city: { connect: { name: 'Addis Ababa' } },
+      country: { connect: { name: 'Ethiopia' } },
+      phoneNumber: '+1234567890',
+      mobileNumber: '+0987654321',
+      bio: 'Platform administrator.',
+    },
+    {
+      firstName: 'Entrepreneur',
+      lastName: 'Test',
+      email: 'entrepreneur@example.com',
+      password: 'entrepreneurpassword', // Replace with a secure password
+      role: Role.Entrepreneur,
+      profileImage: 'https://example.com/entrepreneur1_profile.jpg',
+      bannerImage: 'https://example.com/entrepreneur1_banner.jpg',
+      town: 'Startuptown',
+      city: { connect: { name: 'Addis Ababa' } },
+      country: { connect: { name: 'Ethiopia' } },
+      phoneNumber: '+2468101214',
+      mobileNumber: '+13579111315',
+      bio: 'Building the next big thing.',
+    },
+    // ... (Existing user data)
+
+    {
+      firstName: 'Engager',
+      lastName: 'Test',
+      email: 'engager@example.com',
+      password: 'engagerpassword', // Replace with a secure password
+      role: Role.Engager,
+      profileImage: 'https://example.com/engager2_profile.jpg',
+      bannerImage: 'https://example.com/engager2_banner.jpg',
+      town: 'Engagementville',
+      city: { connect: { name: 'Addis Ababa' } },
+      country: { connect: { name: 'Ethiopia' } },
+      phoneNumber: '+4812161922',
+      mobileNumber: '+371114172023',
+      bio: 'Supporting innovation and growth.',
+    },
+    {
+      firstName: 'Investor',
+      lastName: 'Test',
+      email: 'investor@example.com',
+      password: 'investorpassword', // Replace with a secure password
+      role: Role.Investor,
+      profileImage: 'https://example.com/investor2_profile.jpg',
+      bannerImage: 'https://example.com/investor2_banner.jpg',
+      town: 'Investment City',
+      city: { connect: { name: 'Addis Ababa' } },
+      country: { connect: { name: 'Ethiopia' } },
+      phoneNumber: '+5012345678',
+      mobileNumber: '+6098765432',
+      bio: 'Seeking promising opportunities.',
+    },
+  ];
+
+  for (const user of defaultUsers) {
+    const hashedPassword = await hashPassword(user.password);
+
+    const createdUser = await prisma.user.create({
+      data: {
+        first_name: user.firstName,
+        last_name: user.lastName,
+        email: user.email,
+        password: hashedPassword,
+        profile_image: user.profileImage,
+        banner_image: user.bannerImage,
+        town: user.town,
+        city: user.city,
+        country: user.country,
+        phone_number: user.phoneNumber,
+        mobile_number: user.mobileNumber,
+        bio: user.bio,
+        userRole: {
+          create: {
+            role: {
+              connect: { name: user.role },
+            },
+          },
+        },
+      },
+    });
+    console.log(
+      `User created with email: ${createdUser.email} and role: ${user.role}`,
+    );
+  }
+
   await prisma.$disconnect();
+  console.log('Seeding completed.');
 }
 
 main().catch((e) => {
