@@ -6,8 +6,9 @@ import { JwtGuard } from 'src/auth/guard';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { UserService } from './user.service';
+import { RevokedTokenGuard } from 'src/auth/guard/revoked_token.guard';
 
-@UseGuards(JwtGuard)
+@UseGuards(JwtGuard, RevokedTokenGuard)
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}

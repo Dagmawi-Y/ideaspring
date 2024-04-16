@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -94,6 +95,30 @@ export class AuthService {
       return this.signToken(user.id, user.email, role?.name ?? '');
     } catch (error) {
       throw error;
+    }
+  }
+
+  async logout(token: string) {
+    try {
+      // Verify the token to ensure it's valid
+      const payload = await this.jwt.verifyAsync(token, {
+        secret: this.config.get('JWT_SECRET'),
+      });
+
+      // Add the revoked token to the RevokedToken table
+      await this.prisma.revokedToken.create({
+        data: {
+          token,
+          userId: payload.sub,
+        },
+      });
+
+      console.log({
+        msg: "User logged out - Token Revoked"
+      })
+    } catch (error) {
+      // If the token is invalid or expired, throw an UnauthorizedException
+      throw new UnauthorizedException('Invalid or expired token');
     }
   }
 
