@@ -7,7 +7,17 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: wimagda
-      POSTGRES_DB: startgood
+      POSTGRES_DB: ideaspring
+    networks:
+      - startgood
+  is-test-db:
+    image: postgres
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: wimagda
+      POSTGRES_DB: ideaspring
     networks:
       - startgood
 networks:

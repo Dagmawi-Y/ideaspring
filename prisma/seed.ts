@@ -16,6 +16,26 @@ async function hashPassword(password) {
 }
 
 async function main() {
+  const investorTypes = [
+    'Angel Investor',
+    'Angel Group Angel Investor',
+    'Advisor/Mentor',
+    'Incubator/Accelerator',
+    'Investment Professional',
+    'Other',
+    'Service Provider',
+    'VC Fund',
+  ];
+
+  for (const typeName of investorTypes) {
+    await prisma.investorType.create({
+      data: {
+        name: typeName,
+      },
+    });
+  }
+
+  console.log('Investor types created successfully.');
   // Investor Roles
   await prisma.investorRole.createMany({
     data: [

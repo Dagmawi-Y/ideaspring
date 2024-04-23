@@ -2,14 +2,17 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PrismaService } from './prisma/prisma.service';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useWebSocketAdapter(new IoAdapter(app));
+
+  app.enableCors();
 
   const options = new DocumentBuilder()
-    .setTitle('Start Good.')
-    .setDescription('API Endpoints for the startgood web app.')
+    .setTitle('IdeaSpring.')
+    .setDescription('API Endpoints for the IdeaSpring web app.')
     .setVersion('1.0')
     .build();
 
