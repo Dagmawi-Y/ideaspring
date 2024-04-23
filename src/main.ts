@@ -14,6 +14,7 @@ async function bootstrap() {
     .setTitle('IdeaSpring.')
     .setDescription('API Endpoints for the IdeaSpring web app.')
     .setVersion('1.0')
+    .addServer('api/v1', 'Version 1.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

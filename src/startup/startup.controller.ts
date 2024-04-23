@@ -22,6 +22,7 @@ import { InvestorService } from '../investor/investor.service';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
@@ -31,6 +32,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { DealDetails, PitchDeal, Team } from '@prisma/client';
 
 @ApiTags('Startups')
 @ApiBearerAuth()
@@ -158,5 +160,154 @@ export class StartupController {
   ) {
     const userId = id;
     return this.startupService.showInterest(userId, startupId);
+  }
+
+  // ... (existing imports and code)
+
+  @Put(':id/team')
+  @Roles('entrepreneur')
+  @ApiOperation({ summary: 'Update the team members for a startup' })
+  @ApiParam({ name: 'id', description: 'The ID of the startup' })
+  @ApiOkResponse({ description: 'Team members updated successfully.' })
+  @ApiBadRequestResponse({ description: 'Bad Request. Invalid input data.' })
+  @ApiNotFoundResponse({ description: 'Startup not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must be the creator of the startup.',
+  })
+  async updateTeamMembers(
+    @Param('id') id: string,
+    @Body() teamMembers: Team[],
+    @GetUser('id') userId: number,
+  ) {
+    return this.startupService.updateTeamMembers(
+      parseInt(id, 10),
+      teamMembers,
+      userId,
+    );
+  }
+
+  @Put(':id/deal-details')
+  @Roles('entrepreneur')
+  @ApiOperation({ summary: 'Update the deal details for a startup' })
+  @ApiParam({ name: 'id', description: 'The ID of the startup' })
+  @ApiOkResponse({ description: 'Deal details updated successfully.' })
+  @ApiBadRequestResponse({ description: 'Bad Request. Invalid input data.' })
+  @ApiNotFoundResponse({ description: 'Startup not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must be the creator of the startup.',
+  })
+  async updateDealDetails(
+    @Param('id') id: string,
+    @Body() dealDetails: DealDetails,
+    @GetUser('id') userId: number,
+  ) {
+    return this.startupService.updateDealDetails(
+      parseInt(id, 10),
+      dealDetails,
+      userId,
+    );
+  }
+
+  @Put(':id/pitch-deal')
+  @Roles('entrepreneur')
+  @ApiOperation({ summary: 'Update the pitch deal for a startup' })
+  @ApiParam({ name: 'id', description: 'The ID of the startup' })
+  @ApiOkResponse({ description: 'Pitch deal updated successfully.' })
+  @ApiBadRequestResponse({ description: 'Bad Request. Invalid input data.' })
+  @ApiNotFoundResponse({ description: 'Startup not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must be the creator of the startup.',
+  })
+  async updatePitchDeal(
+    @Param('id') id: string,
+    @Body() pitchDeal: PitchDeal,
+    @GetUser('id') userId: number,
+  ) {
+    return this.startupService.updatePitchDeal(
+      parseInt(id, 10),
+      pitchDeal,
+      userId,
+    );
+  }
+
+  @Post(':id/upvote')
+  @Roles('entrepreneur', 'investor', 'engager')
+  @ApiOperation({ summary: 'Upvote or remove upvote for a startup' })
+  @ApiParam({ name: 'id', description: 'The ID of the startup' })
+  @ApiOkResponse({ description: 'Upvote status updated successfully.' })
+  @ApiNotFoundResponse({ description: 'Startup not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must have the appropriate role.',
+  })
+  async toggleUpvote(@Param('id') id: string, @GetUser('id') userId: number) {
+    return this.startupService.toggleUpvote(parseInt(id, 10), userId);
+  }
+
+  @Post(':id/comment')
+  @Roles('entrepreneur', 'investor', 'engager')
+  @ApiOperation({ summary: 'Comment on a startup' })
+  @ApiParam({ name: 'id', description: 'The ID of the startup' })
+  @ApiBody({ type: String, description: 'The comment text' })
+  @ApiCreatedResponse({ description: 'Comment added successfully.' })
+  @ApiNotFoundResponse({ description: 'Startup not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must have the appropriate role.',
+  })
+  async commentOnStartup(
+    @Param('id') id: string,
+    @Body('comment') comment: string,
+    @GetUser('id') userId: number,
+  ) {
+    return this.startupService.commentOnStartup(
+      parseInt(id, 10),
+      comment,
+      userId,
+    );
+  }
+
+  @Post(':id/comment/:commentId/reply')
+  @Roles('entrepreneur', 'investor', 'engager')
+  @ApiOperation({ summary: 'Reply to a comment on a startup' })
+  @ApiParam({ name: 'id', description: 'The ID of the startup' })
+  @ApiParam({
+    name: 'commentId',
+    description: 'The ID of the comment to reply to',
+  })
+  @ApiBody({ type: String, description: 'The reply text' })
+  @ApiCreatedResponse({ description: 'Reply added successfully.' })
+  @ApiNotFoundResponse({ description: 'Startup or comment not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must have the appropriate role.',
+  })
+  async replyToComment(
+    @Param('id') id: string,
+    @Param('commentId') commentId: string,
+    @Body('reply') reply: string,
+    @GetUser('id') userId: number,
+  ) {
+    return this.startupService.replyToComment(
+      parseInt(id, 10),
+      parseInt(commentId, 10),
+      reply,
+      userId,
+    );
   }
 }

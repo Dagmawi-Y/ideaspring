@@ -110,29 +110,29 @@ model Country {
 }
 
 model Startup {
-  id                     Int                     @id @default(autoincrement())
-  user                   User                    @relation("UserStartups", fields: [user_id], references: [id], onDelete: Cascade)
+  id                     Int                @id @default(autoincrement())
+  user                   User               @relation("UserStartups", fields: [user_id], references: [id], onDelete: Cascade)
   user_id                Int
   pitch_title            String
   website                String?
   location               String?
   mobile_number          String?
   industry_1_id          Int?
-  industry_1             Industry?               @relation("Industry1", fields: [industry_1_id], references: [id])
+  industry_1             Industry?          @relation("Industry1", fields: [industry_1_id], references: [id])
   industry_2_id          Int?
-  industry_2             Industry?               @relation("Industry2", fields: [industry_2_id], references: [id])
+  industry_2             Industry?          @relation("Industry2", fields: [industry_2_id], references: [id])
   stage_id               Int?
-  stage                  Stage?                  @relation(fields: [stage_id], references: [id])
+  stage                  Stage?             @relation(fields: [stage_id], references: [id])
   ideal_investor_role_id Int?
-  ideal_investor_role    InvestorRole?           @relation(fields: [ideal_investor_role_id], references: [id])
+  ideal_investor_role    InvestorRole?      @relation(fields: [ideal_investor_role_id], references: [id])
   previous_round_amount  Float?
   total_raising_amount   Float?
   raised_amount          Float?
   minimum_investment     Float?
   tax_relief_id          Int?
-  tax_relief             TaxRelief?              @relation(fields: [tax_relief_id], references: [id])
-  impression_count       Int                     @default(0)
-  created_at             DateTime                @default(now())
+  tax_relief             TaxRelief?         @relation(fields: [tax_relief_id], references: [id])
+  impression_count       Int                @default(0)
+  created_at             DateTime           @default(now())
   pitch_deal             PitchDeal?
   deal_details           DealDetails?
   team_members           Team[]
@@ -142,7 +142,6 @@ model Startup {
   upvotes                Upvote[]
   mlRecommendations      MLRecommendation[]
   Interest               Interest[]
-  EntrepreneurAnalytics  EntrepreneurAnalytics[]
 }
 
 model PitchDeal {
@@ -298,7 +297,6 @@ model Investor {
   ShortlistedInvestor    ShortlistedInvestor[]
   InvestorType           InvestorType?           @relation(fields: [investorTypeId], references: [id])
   investorTypeId         Int?
-  InvestorAnalytics      InvestorAnalytics[]
 }
 
 model InvestorType {
@@ -380,13 +378,16 @@ model InvestorCompany {
 }
 
 model Comment {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   user_id    Int
   startup_id Int
   comment    String
-  created_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  startup    Startup  @relation(fields: [startup_id], references: [id])
+  created_at DateTime  @default(now())
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  startup    Startup   @relation(fields: [startup_id], references: [id])
+  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  parentId   Int?
+  replies    Comment[] @relation("CommentReplies")
 }
 
 model Upvote {
@@ -452,39 +453,4 @@ model Interest {
   createdAt DateTime @default(now())
 
   @@unique([userId, startupId])
-}
-
-model EntrepreneurAnalytics {
-  id        Int      @id @default(autoincrement())
-  startup   Startup? @relation(fields: [startupId], references: [id])
-  startupId Int?
-
-  upvotesCount      Int
-  commentsCount     Int
-  impressionsCount  Int
-  shortlistsCount   Int
-  profileViewsCount Int
-  amountRaised      Float
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("entrepreneur_analytics")
-}
-
-model InvestorAnalytics {
-  id         Int      @id @default(autoincrement())
-  investor   Investor @relation(fields: [investorId], references: [id])
-  investorId Int
-
-  investmentsCount    Int
-  amountInvested      Float
-  pitchesViewedCount  Int
-  interestsShownCount Int
-  shortlistsCount     Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("investor_analytics")
 }

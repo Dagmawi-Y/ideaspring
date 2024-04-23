@@ -8,16 +8,29 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtGuard } from 'src/auth/guard';
 import { PrismaService } from '../prisma/prisma.service';
 import { Conversation, User } from '@prisma/client';
 
+@ApiBearerAuth()
+@ApiTags('Conversations')
 @Controller('conversations')
 export class ConversationController {
   constructor(private prisma: PrismaService) {}
 
   @UseGuards(JwtGuard)
   @Post('new')
+  @ApiOperation({ summary: 'Create a new conversation' })
+  @ApiResponse({
+    status: 201,
+    description: 'Conversation created successfully',
+  })
   async createConversation(
     @Request() req,
     @Body() body: { participantIds: number[] },
@@ -47,6 +60,11 @@ export class ConversationController {
 
   @UseGuards(JwtGuard)
   @Get(':id')
+  @ApiOperation({ summary: 'Get a specific conversation by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Conversation retrieved successfully',
+  })
   async getConversation(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -90,6 +108,11 @@ export class ConversationController {
 
   @UseGuards(JwtGuard)
   @Get()
+  @ApiOperation({ summary: 'Get all conversations for the current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Conversations retrieved successfully',
+  })
   async getConversations(@Request() req): Promise<Conversation[]> {
     const user = req.user as User;
     return this.prisma.conversation.findMany({

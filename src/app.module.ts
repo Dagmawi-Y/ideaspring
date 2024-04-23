@@ -6,7 +6,6 @@ import { UserModule } from './user/user.module';
 import { InvestorModule } from './investor/investor.module';
 import { NotificationModule } from './notification/notification.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { PitchModule } from './pitch/pitch.module';
 import { EngagerModule } from './engager/engager.module';
 import { StartupModule } from './startup/startup.module';
 import { SearchModule } from './search/search.module';
@@ -27,7 +26,6 @@ import { EntrepreneurModule } from './entrepreneur/entrepreneur.module';
     InvestorModule,
     NotificationModule,
     PrismaModule,
-    PitchModule,
     EngagerModule,
     StartupModule,
     SearchModule,
