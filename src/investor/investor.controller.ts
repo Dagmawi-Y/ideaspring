@@ -67,7 +67,7 @@ export class InvestorController {
     return this.investorService.getInvestorById(id);
   }
 
-  @Roles('investor')
+  @Roles('investor', 'entrepreneur')
   @Post(':id/shortlist')
   @Roles('entrepreneur')
   @ApiOperation({ summary: 'Shortlist an investor for an entrepreneur' })
@@ -319,4 +319,5 @@ export class InvestorController {
   ) {
     return this.investorService.addInvestorType(investorId, investorTypeName);
   }
+
 }

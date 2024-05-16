@@ -11,20 +11,40 @@ export class SearchService {
       return { error: 'Search query must be at least 3 characters' };
     }
 
-    const searchableFields = {
-      OR: [
-        { pitch_title: { search: query } },
-        { website: { search: query } },
-        { location: { search: query } },
-        { mobile_number: { search: query } },
-        { industry_1: { industry_name: { search: query } } },
-        { industry_2: { industry_name: { search: query } } },
-        { stage: { stage_name: { search: query } } },
-      ],
-    };
-
     const startups = await this.prisma.startup.findMany({
-      where: searchableFields,
+      where: {
+        OR: [
+          { pitch_title: { contains: query } },
+          { website: { contains: query } },
+          { location: { contains: query } },
+
+          {
+            industry_1: {
+              industry_name: { contains: query },
+            },
+          },
+          {
+            industry_2: {
+              industry_name: { contains: query },
+            },
+          },
+          {
+            stage: {
+              stage_name: { contains: query },
+            },
+          },
+          {
+            ideal_investor_role: {
+              role_name: { contains: query },
+            },
+          },
+          {
+            tax_relief: {
+              relief_name: { contains: query },
+            },
+          },
+        ],
+      },
       include: {
         industry_1: true,
         industry_2: true,
@@ -36,17 +56,17 @@ export class SearchService {
         team_members: true,
         images_videos: true,
         documents: true,
-        comments: {
-          include: {
-            user: true,
-          },
-        },
+        // comments: {
+        //   include: {
+        //     user: true,
+        //   },
+        // },
         upvotes: {
           include: {
             user: true,
           },
         },
-        mlRecommendations: true,
+        // mlRecommendations: true,
         Interest: true,
       },
       orderBy: {

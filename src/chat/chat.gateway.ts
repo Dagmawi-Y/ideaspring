@@ -6,30 +6,32 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UseGuards } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/guard';
 import { PrismaService } from '../prisma/prisma.service';
-
-import { Conversation, Message, User } from '@prisma/client';
 import { JwtSocketGuard } from 'src/auth/guard/jwt_socket.guard';
+import { UseGuards } from '@nestjs/common';
 
 @WebSocketGateway({ cors: { origin: '*' } })
+@UseGuards(JwtSocketGuard)
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
 
   constructor(private prisma: PrismaService) {}
 
-  // @UseGuards(JwtSocketGuard)
   @SubscribeMessage('joinRoom')
   async joinRoom(
-    @MessageBody() data: { userId: string; conversationId: string },
+    @MessageBody() data: { conversationId: string },
     @ConnectedSocket() socket: Socket,
   ) {
-    const { userId, conversationId } = data;
-    socket.join(`conversation-${conversationId}`);
-    console.log({ conversationId });
+    const { conversationId } = data;
+    const client = socket.client;
+    console.log({
+      client,
+    });
+    const userId = 1;
 
+    // Join the room
+    socket.join(`conversation-${conversationId}`);
     // Fetch conversation and messages
     const conversation = await this.prisma.conversation.findUnique({
       where: { id: parseInt(conversationId) },
@@ -46,6 +48,16 @@ export class ChatGateway {
       },
     });
 
+    // Check if the user is a participant in the conversation
+    const isParticipant = conversation.participants.some(
+      (participant) => participant.id === userId,
+    );
+    if (!isParticipant) {
+      // Handle the case where the user is not a participant
+      socket.emit('error', 'You are not a participant in this conversation');
+      return;
+    }
+
     // Emit conversation details and messages to the client
     socket.emit('conversationJoined', {
       conversation,
@@ -58,21 +70,19 @@ export class ChatGateway {
     });
   }
 
-  // @UseGuards(JwtSocketGuard)
   @SubscribeMessage('sendMessage')
   async sendMessage(
-    @MessageBody()
-    data: { senderId: number; conversationId: number; content: string },
+    @MessageBody() data: { conversationId: number; content: string },
     @ConnectedSocket() socket: Socket,
   ) {
-    console.log({ data });
-    const { senderId, conversationId, content } = data;
+    const { conversationId, content } = data;
+    const senderId = 1;
 
     // Create a new message
     const newMessage = await this.prisma.message.create({
       data: {
-        sender: { connect: { id: senderId } }, // Connect the existing User record
-        conversation: { connect: { id: conversationId } }, // Connect the existing Conversation record
+        sender: { connect: { id: senderId } },
+        conversation: { connect: { id: conversationId } },
         content,
       },
     });

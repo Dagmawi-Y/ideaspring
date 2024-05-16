@@ -179,7 +179,7 @@ export class StartupService {
   }
 
   async getAllStartups() {
-    const startups = await this.prisma.startup.findMany();
+    const startups = await this.prisma.startup.findMany({});
     return startups;
   }
 
@@ -492,5 +492,89 @@ export class StartupService {
         };
       }
     }
+  }
+
+  async getCommentReplies(commentId: number) {
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+      include: {
+        replies: {
+          include: {
+            user: false,
+          },
+        },
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    return comment.replies;
+  }
+
+  async shortlistStartup(startupId: number, investorId: number) {
+    // Check if the startup exists
+    const startup = await this.prisma.startup.findUnique({
+      where: { id: startupId },
+    });
+
+    if (!startup) {
+      throw new NotFoundException('Startup not found');
+    }
+
+    // Check if the investor exists
+    const investor = await this.prisma.investor.findUnique({
+      where: { id: investorId },
+    });
+
+    if (!investor) {
+      throw new NotFoundException('Investor not found');
+    }
+
+    // Check if the startup is already shortlisted by the investor
+    const existingShortlist = await this.prisma.shortlistedStartup.findUnique({
+      where: {
+        investor_id_startup_id: {
+          investor_id: investorId,
+          startup_id: startupId,
+        },
+      },
+    });
+
+    if (existingShortlist) {
+      throw new BadRequestException('Startup already shortlisted');
+    }
+
+    // Create a new shortlist entry
+    const shortlist = await this.prisma.shortlistedStartup.create({
+      data: {
+        investor_id: investorId,
+        startup_id: startupId,
+      },
+    });
+
+    return { message: 'Startup shortlisted successfully', shortlist };
+  }
+
+  async getShortlistedStartups(investorId: number) {
+    const shortlistedStartups = await this.prisma.shortlistedStartup.findMany({
+      where: { investor_id: investorId },
+      include: {
+        startup: {
+          include: {
+            user: true,
+            industry_1: true,
+            industry_2: true,
+            stage: true,
+            ideal_investor_role: true,
+            tax_relief: true,
+            // ... other relevant startup relations
+          },
+        },
+      },
+    });
+
+    return shortlistedStartups.map((item) => item.startup);
   }
 }

@@ -26,7 +26,7 @@ async function bootstrap() {
     }),
   );
 
-  // app.useLogger(['error', 'warn', 'log', 'verbose']);
+  app.useLogger(['error', 'warn', 'log', 'verbose']);
 
   app.setGlobalPrefix('api/v1');
   await app.listen(3333);

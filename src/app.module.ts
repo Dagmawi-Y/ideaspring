@@ -15,6 +15,7 @@ import { ChatModule } from './chat/chat.module';
 import { ConversationController } from './conversation/conversation.controller';
 import { InteractionModule } from './interaction/interaction.module';
 import { EntrepreneurModule } from './entrepreneur/entrepreneur.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { EntrepreneurModule } from './entrepreneur/entrepreneur.module';
     ChatModule,
     InteractionModule,
     EntrepreneurModule,
+    UploadModule,
   ],
   controllers: [ConversationController],
   providers: [],

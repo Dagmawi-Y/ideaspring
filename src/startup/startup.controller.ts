@@ -310,4 +310,64 @@ export class StartupController {
       userId,
     );
   }
+
+  @Get(':id/comment/:commentId/replies')
+  @Roles('entrepreneur', 'investor', 'engager', 'admin')
+  @ApiOperation({
+    summary: 'Get all replies for a specific comment on a startup',
+  })
+  @ApiParam({ name: 'id', description: 'The ID of the startup' })
+  @ApiParam({ name: 'commentId', description: 'The ID of the comment' })
+  @ApiOkResponse({ description: 'Replies retrieved successfully.' })
+  @ApiNotFoundResponse({ description: 'Startup or comment not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must have the appropriate role.',
+  })
+  async getCommentReplies(
+    @Param('id') id: string,
+    @Param('commentId') commentId: string,
+  ) {
+    return this.startupService.getCommentReplies(parseInt(commentId, 10));
+  }
+
+  @Post(':id/shortlist')
+  @Roles('investor')
+  @ApiOperation({ summary: 'Shortlist a startup as an investor' })
+  @ApiParam({ name: 'id', description: 'The ID of the startup' })
+  @ApiCreatedResponse({ description: 'Startup shortlisted successfully.' })
+  @ApiNotFoundResponse({ description: 'Startup or investor not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must be an investor.',
+  })
+  async shortlistStartup(
+    @Param('id') startupId: string,
+    @GetUser('id') investorId: number,
+  ) {
+    return this.startupService.shortlistStartup(
+      parseInt(startupId, 10),
+      investorId,
+    );
+  }
+
+  @Get('shortlisted')
+  @Roles('investor')
+  @ApiOperation({ summary: 'Get all shortlisted startups for an investor' })
+  @ApiOkResponse({
+    description: 'Shortlisted startups retrieved successfully.',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized. User must be logged in.',
+  })
+  @ApiForbiddenResponse({
+    description: 'Forbidden. User must be an investor.',
+  })
+  async getShortlistedStartups(@GetUser('id') investorId: number) {
+    return this.startupService.getShortlistedStartups(investorId);
+  }
 }
