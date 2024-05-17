@@ -102,6 +102,7 @@ node_modules/
 
 # dotenv environment variables file
 .env
+.env.test
 
 ./src/firebase
 

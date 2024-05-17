@@ -87,16 +87,8 @@ export class StartupService {
         team_members: true,
         images_videos: true,
         documents: true,
-        comments: {
-          include: {
-            user: true, // Include user details for each comment
-          },
-        },
-        upvotes: {
-          include: {
-            user: true, // Include user details for each upvote
-          },
-        },
+        comments: true,
+        upvotes: true,
         mlRecommendations: true,
       },
     });

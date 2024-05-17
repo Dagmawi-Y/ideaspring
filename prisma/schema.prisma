@@ -179,7 +179,7 @@ model Team {
 model ImagesVideos {
   id         Int      @id @default(autoincrement())
   startup_id Int
-  image_path String?
+  image_url  String?
   video_url  String?
   created_at DateTime @default(now())
   startup    Startup  @relation(fields: [startup_id], references: [id])
@@ -189,7 +189,7 @@ model Document {
   id            Int      @id @default(autoincrement())
   startup_id    Int
   document_type String?
-  document_path String?
+  document_url  String?
   created_at    DateTime @default(now())
   startup       Startup  @relation(fields: [startup_id], references: [id])
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { v2 as cloudinary } from 'cloudinary';
 import axios from 'axios';
 import { Blob } from 'buffer';
 const fs = require('fs');
@@ -11,7 +12,13 @@ export class UploadService {
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
-  ) {}
+  ) {
+    cloudinary.config({
+      cloud_name: this.config.get('CLOUDINARY_CLOUD_NAME'),
+      api_key: this.config.get('CLOUDINARY_API_KEY'),
+      api_secret: this.config.get('CLOUDINARY_API_SECRET'),
+    });
+  }
 
   async uploadVideo(file: Express.Multer.File, startupId: number) {
     try {
@@ -62,6 +69,41 @@ export class UploadService {
       return {
         success: false,
         message: 'Error uploading video',
+        error: error.message,
+      };
+    }
+  }
+
+  async uploadImage(file: Express.Multer.File, startupId: number) {
+    try {
+      const uploadResult = await cloudinary.uploader.upload(file.path, {
+        folder: 'startup_images',
+        public_id: `${startupId}_${file.originalname}`,
+        // Image optimization settings
+        transformation: [
+          { width: 800, height: 600, crop: 'fill' }, // Resize to 800x600, crop if necessary
+          { fetch_format: 'auto', quality: 'auto' }, // Use automatic format and quality
+        ],
+      });
+      const imageUrl = uploadResult.secure_url;
+
+      await this.prisma.imagesVideos.create({
+        data: {
+          image_url: imageUrl,
+          startup: { connect: { id: startupId } },
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Image uploaded successfully',
+        imageUrl,
+      };
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return {
+        success: false,
+        message: 'Error uploading image',
         error: error.message,
       };
     }
