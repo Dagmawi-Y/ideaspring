@@ -1,12 +1,12 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorator/roles.decorator';
+
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    console.log('-----------context from roles guard', context.getHandler());
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
@@ -19,13 +19,39 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
     const userRole = user?.role?.name;
 
-    console.log('RolesGuard canActivate');
-    console.log('User:', user);
-    console.log('Required roles:', requiredRoles);
-
-    return requiredRoles.some((role) => role === userRole);
+    // Check if the user's role is included in the required roles array
+    return requiredRoles.includes(userRole);
   }
 }
+
+// import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+// import { Reflector } from '@nestjs/core';
+// import { ROLES_KEY } from '../decorator/roles.decorator';
+// @Injectable()
+// export class RolesGuard implements CanActivate {
+//   constructor(private reflector: Reflector) {}
+
+//   canActivate(context: ExecutionContext): boolean {
+//     console.log('-----------context from roles guard', context.getHandler());
+//     const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+//       ROLES_KEY,
+//       [context.getHandler(), context.getClass()],
+//     );
+
+//     if (!requiredRoles) {
+//       return true;
+//     }
+
+//     const { user } = context.switchToHttp().getRequest();
+//     const userRole = user?.role?.name;
+
+//     console.log('RolesGuard canActivate');
+//     console.log('User:', user);
+//     console.log('Required roles:', requiredRoles);
+
+//     return requiredRoles.some((role) => role === userRole);
+//   }
+// }
 
 //Permissions implementation - for the future
 

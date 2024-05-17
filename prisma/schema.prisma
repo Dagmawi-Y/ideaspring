@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -37,33 +38,41 @@ model RolePermission {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
   first_name    String?
   last_name     String?
-  email         String         @unique
+  email         String    @unique
   password      String
   profile_image String?
   banner_image  String?
   town          String?
-  city          City?          @relation(fields: [city_id], references: [id])
+  city          City?     @relation(fields: [city_id], references: [id])
   city_id       Int?
-  country       Country?       @relation(fields: [country_id], references: [id])
+  country       Country?  @relation(fields: [country_id], references: [id])
   country_id    Int?
   phone_number  String?
   mobile_number String?
   bio           String?
-  created_at    DateTime       @default(now())
+  created_at    DateTime  @default(now())
+  investor      Investor?
+  investor_id   Int?      @unique
+  userRole      UserRole? @relation("UserToRole")
+
   alerts        Alert[]
   startups      Startup[]      @relation("UserStartups")
-  investor      Investor?
   comments      Comment[]
   upvotes       Upvote[]
-  investor_id   Int?           @unique
-  userRole      UserRole?      @relation("UserToRole")
   conversations Conversation[] @relation("ConversationParticipants")
   Message       Message[]
   ReadStatus    ReadStatus[]
   RevokedToken  RevokedToken[]
+
+  isEmailVerified     Boolean               @default(false)
+  verificationToken   String?               @unique
+  pwResetToken        String?
+  pwResetTokenExpiry  DateTime?
+  ShortlistedInvestor ShortlistedInvestor[]
+  Interest            Interest[]
 }
 
 model UserRole {
@@ -101,29 +110,29 @@ model Country {
 }
 
 model Startup {
-  id                     Int                @id @default(autoincrement())
-  user                   User               @relation("UserStartups", fields: [user_id], references: [id], onDelete: Cascade)
+  id                     Int                  @id @default(autoincrement())
+  user                   User                 @relation("UserStartups", fields: [user_id], references: [id], onDelete: Cascade)
   user_id                Int
   pitch_title            String
   website                String?
   location               String?
   mobile_number          String?
   industry_1_id          Int?
-  industry_1             Industry?          @relation("Industry1", fields: [industry_1_id], references: [id])
+  industry_1             Industry?            @relation("Industry1", fields: [industry_1_id], references: [id])
   industry_2_id          Int?
-  industry_2             Industry?          @relation("Industry2", fields: [industry_2_id], references: [id])
+  industry_2             Industry?            @relation("Industry2", fields: [industry_2_id], references: [id])
   stage_id               Int?
-  stage                  Stage?             @relation(fields: [stage_id], references: [id])
+  stage                  Stage?               @relation(fields: [stage_id], references: [id])
   ideal_investor_role_id Int?
-  ideal_investor_role    InvestorRole?      @relation(fields: [ideal_investor_role_id], references: [id])
+  ideal_investor_role    InvestorRole?        @relation(fields: [ideal_investor_role_id], references: [id])
   previous_round_amount  Float?
   total_raising_amount   Float?
   raised_amount          Float?
   minimum_investment     Float?
   tax_relief_id          Int?
-  tax_relief             TaxRelief?         @relation(fields: [tax_relief_id], references: [id])
-  impression_count       Int                @default(0)
-  created_at             DateTime           @default(now())
+  tax_relief             TaxRelief?           @relation(fields: [tax_relief_id], references: [id])
+  impression_count       Int                  @default(0)
+  created_at             DateTime             @default(now())
   pitch_deal             PitchDeal?
   deal_details           DealDetails?
   team_members           Team[]
@@ -132,6 +141,8 @@ model Startup {
   comments               Comment[]
   upvotes                Upvote[]
   mlRecommendations      MLRecommendation[]
+  Interest               Interest[]
+  ShortlistedStartup     ShortlistedStartup[]
 }
 
 model PitchDeal {
@@ -270,7 +281,6 @@ model InvestorInterests {
 
 model Investor {
   id                     Int                     @id @default(autoincrement())
-  investor_type          String?
   keywords               Keyword[]
   invested_companies     InvestorCompany[]
   created_at             DateTime                @default(now())
@@ -285,6 +295,16 @@ model Investor {
   interested_industries  InvestedIndustry[]
   interested_countries   InvestedCountry[]
   spoken_languages       Language[]
+  ShortlistedInvestor    ShortlistedInvestor[]
+  InvestorType           InvestorType?           @relation(fields: [investorTypeId], references: [id])
+  investorTypeId         Int?
+  ShortlistedStartup     ShortlistedStartup[]
+}
+
+model InvestorType {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  investors Investor[]
 }
 
 model InvestedLocation {
@@ -319,6 +339,17 @@ model InvestedCountry {
   investor_id  Int
 }
 
+model ShortlistedInvestor {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  investor_id Int
+  created_at  DateTime @default(now())
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  investor    Investor @relation(fields: [investor_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, investor_id])
+}
+
 model Language {
   id            Int       @id @default(autoincrement())
   language_name String
@@ -349,13 +380,16 @@ model InvestorCompany {
 }
 
 model Comment {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   user_id    Int
   startup_id Int
   comment    String
-  created_at DateTime @default(now())
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  startup    Startup  @relation(fields: [startup_id], references: [id])
+  created_at DateTime  @default(now())
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  startup    Startup   @relation(fields: [startup_id], references: [id])
+  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  parentId   Int?
+  replies    Comment[] @relation("CommentReplies")
 }
 
 model Upvote {
@@ -410,4 +444,26 @@ model ReadStatus {
   updated_at      DateTime     @updatedAt
 
   @@unique([conversation_id, user_id])
+}
+
+model Interest {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  startup   Startup  @relation(fields: [startupId], references: [id])
+  startupId Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, startupId])
+}
+
+model ShortlistedStartup {
+  id          Int      @id @default(autoincrement())
+  investor_id Int
+  startup_id  Int
+  created_at  DateTime @default(now())
+  investor    Investor @relation(fields: [investor_id], references: [id], onDelete: Cascade)
+  startup     Startup  @relation(fields: [startup_id], references: [id], onDelete: Cascade)
+
+  @@unique([investor_id, startup_id])
 }
