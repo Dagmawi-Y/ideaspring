@@ -1,4 +1,11 @@
-import { IsString, IsEmail, IsNotEmpty, IsIn, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsNotEmpty,
+  IsIn,
+  IsOptional,
+  IsEnum,
+} from 'class-validator';
 
 enum UserRole {
   Engager = 'engager',
@@ -6,6 +13,7 @@ enum UserRole {
   Investor = 'investor',
   Admin = 'admin',
 }
+
 export class SignupDto {
   @IsEmail()
   @IsNotEmpty()
@@ -27,4 +35,8 @@ export class SignupDto {
   @IsNotEmpty()
   @IsEnum(UserRole)
   role: UserRole;
+
+  @IsString()
+  @IsOptional()
+  investor_type?: string;
 }
