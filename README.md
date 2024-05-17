@@ -1,4 +1,4 @@
-# Startgood
+# Ideaspring
 
 ## Description
 This project is a web-based platform built with NestJS and Prisma that facilitates the interaction of startups and investors. It provides features for startup registration, authentication, and authorization, as well as protected routes for registered startups to access specific data.
@@ -6,12 +6,12 @@ This project is a web-based platform built with NestJS and Prisma that facilitat
 ## Installation
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/Dagmawi-Y/startgood.git
+    git clone https://github.com/Dagmawi-Y/ideaspring.git
     ```
 
 2. **Install dependencies:**
     ```bash
-    cd startgood
+    cd ideaspring
     npm install
     ```
 
