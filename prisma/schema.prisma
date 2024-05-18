@@ -38,25 +38,26 @@ model RolePermission {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  first_name    String?
-  last_name     String?
-  email         String    @unique
-  password      String
-  profile_image String?
-  banner_image  String?
-  town          String?
-  city          City?     @relation(fields: [city_id], references: [id])
-  city_id       Int?
-  country       Country?  @relation(fields: [country_id], references: [id])
-  country_id    Int?
-  phone_number  String?
-  mobile_number String?
-  bio           String?
-  created_at    DateTime  @default(now())
-  investor      Investor?
-  investor_id   Int?      @unique
-  userRole      UserRole? @relation("UserToRole")
+  id                Int       @id @default(autoincrement())
+  first_name        String?
+  last_name         String?
+  email             String    @unique
+  password          String
+  profile_image_url String?
+  banner_image_url  String?
+  town              String?
+  city              City?     @relation(fields: [city_id], references: [id])
+  city_id           Int?
+  country           Country?  @relation(fields: [country_id], references: [id])
+  country_id        Int?
+  phone_number      String?
+  mobile_number     String?
+  bio               String?
+  created_at        DateTime  @default(now())
+  investor          Investor? @relation(fields: [investor_id], references: [id])
+
+  investor_id Int?      @unique
+  userRole    UserRole? @relation("UserToRole")
 
   alerts        Alert[]
   startups      Startup[]      @relation("UserStartups")
@@ -236,25 +237,25 @@ model Alert {
 }
 
 model InvestorProfile {
-  id               Int      @id @default(autoincrement())
-  first_name       String
-  last_name        String
-  email            String   @unique
-  profile_image    String?
-  banner_image     String?
-  town_city        String?
-  country          String?
-  phone_number     String?
-  mobile_number    String?
-  linkedin_profile String?
-  twitter_profile  String?
-  facebook_profile String?
-  website          String?
-  skype            String?
-  about_me         String?
-  created_at       DateTime @default(now())
-  investor         Investor @relation(fields: [investor_id], references: [id])
-  investor_id      Int      @unique
+  id                Int      @id @default(autoincrement())
+  first_name        String
+  last_name         String
+  email             String   @unique
+  profile_image_url String?
+  banner_image_url  String?
+  town_city         String?
+  country           String?
+  phone_number      String?
+  mobile_number     String?
+  linkedin_profile  String?
+  twitter_profile   String?
+  facebook_profile  String?
+  website           String?
+  skype             String?
+  about_me          String?
+  created_at        DateTime @default(now())
+  investor          Investor @relation(fields: [investor_id], references: [id])
+  investor_id       Int      @unique
 }
 
 model InvestorCompanyProfile {
@@ -284,7 +285,7 @@ model Investor {
   keywords               Keyword[]
   invested_companies     InvestorCompany[]
   created_at             DateTime                @default(now())
-  user                   User?                   @relation(fields: [user_id], references: [id])
+  user                   User?
   user_id                Int?                    @unique
   mlRecommendations      MLRecommendation[]
   investorProfile        InvestorProfile?

@@ -110,3 +110,5 @@ node_modules/
 
 ./uploads
 uploads
+./downloads
+downloads

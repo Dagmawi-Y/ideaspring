@@ -12,6 +12,9 @@ export class UserService {
         where: { id: userId },
       });
       const { password, ...userInfo } = user;
+      console.log({
+        userInfo,
+      });
       return userInfo;
     } catch (error) {
       throw new Error('Failed to retrieve user profile');
