@@ -8,10 +8,10 @@ export class InvestorProfileDto {
   last_name: string;
 
   @IsString()
-  profile_image?: string;
+  profile_image_url?: string;
 
   @IsString()
-  banner_image?: string;
+  banner_image_url?: string;
 
   @IsString()
   town_city?: string;

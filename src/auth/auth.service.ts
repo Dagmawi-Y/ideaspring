@@ -59,6 +59,10 @@ export class AuthService {
           },
         });
 
+        console.log({
+          role: dto.role,
+        });
+
         // Check if the user is registering as an investor
         if (dto.role === 'investor') {
           // Create an Investor record
@@ -70,6 +74,10 @@ export class AuthService {
                 },
               },
             },
+          });
+
+          console.log({
+            investor,
           });
 
           // Create an InvestorProfile record
